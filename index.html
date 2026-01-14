@@ -205,27 +205,27 @@
     "use strict";
 
     const cards = [
-      // Prefixes
-      { type:"prefix", affix:"con- / com-", meaning:"together with", cheat:"construct > with structure" },
-      { type:"prefix", affix:"in- / im- / ir- / il-", meaning:"not", cheat:"ineffective > not effective" },
-      { type:"prefix", affix:"ex-", meaning:"outside, away from, no", cheat:"exit > go outside" },
-      { type:"prefix", affix:"non-", meaning:"not", cheat:"nonstop > not stopping" },
-      { type:"prefix", affix:"post-", meaning:"later, after", cheat:"postgame > after the game" },
-      { type:"prefix", affix:"anti-", meaning:"against, opposite", cheat:"antiwar > against war" },
-      { type:"prefix", affix:"contra-", meaning:"against, opposite", cheat:'contraband > against the "band" (old word for a "law")' },
+  // Prefixes
+  { type:"prefix", affix:"con- / com-", meaning:"together with", cheat:"construct > with structure", hintBold:["with"] },
+  { type:"prefix", affix:"in- / im- / ir- / il-", meaning:"not", cheat:"ineffective > not effective", hintBold:["not"] },
+  { type:"prefix", affix:"ex-", meaning:"outside, away from, no", cheat:"exit > go outside", hintBold:["outside"] },
+  { type:"prefix", affix:"non-", meaning:"not", cheat:"nonstop > not stopping", hintBold:["not"] },
+  { type:"prefix", affix:"post-", meaning:"later, after", cheat:"postgame > after the game", hintBold:["after"] },
+  { type:"prefix", affix:"anti-", meaning:"against, opposite", cheat:"antiwar > against war", hintBold:["against"] },
+  { type:"prefix", affix:"contra-", meaning:"against, opposite", cheat:'contraband > against the "band" (old word for a "law")', hintBold:["against"] },
 
-      // Suffixes
-      { type:"suffix", affix:"-ic", meaning:"like, characteristic of", cheat:"athletic > like an athelete" },
-      { type:"suffix", affix:"-ive", meaning:"having a quality or tendency", cheat:"creative > the quality to create" },
-      { type:"suffix", affix:"-ate", meaning:"office, rank, or location; cause or make", cheat:"graduate > rank above grade level or make the grade" },
-      { type:"suffix", affix:"-ium", meaning:"relating to status", cheat:"medium > middle status" },
-      { type:"suffix", affix:"-ize", meaning:"become, change", cheat:"finalize > become final" },
-      { type:"suffix", affix:"-or", meaning:"one who does, is from, or has a special characteristic", cheat:"actor > one who acts" },
-      { type:"suffix", affix:"-acy", meaning:"state or quality of", cheat:"privacy > quality of being private" },
-      { type:"suffix", affix:"-al", meaning:"act or process of", cheat:"approval > act of approving" },
-      { type:"suffix", affix:"-ion / -sion / -tion", meaning:"state of being, quality, action", cheat:"reaction > state of reacting" },
-      { type:"suffix", affix:"-ite", meaning:"nature, quality of", cheat:"favorite > quality of being favored" },
-    ];
+  // Suffixes
+  { type:"suffix", affix:"-ic", meaning:"like, characteristic of", cheat:"athletic > like an athelete", hintBold:["like"] },
+  { type:"suffix", affix:"-ive", meaning:"having a quality or tendency", cheat:"creative > the quality to create", hintBold:["quality"] },
+  { type:"suffix", affix:"-ate", meaning:"office, rank, or location; cause or make", cheat:"graduate > rank above grade level or make the grade", hintBold:["rank","make"] },
+  { type:"suffix", affix:"-ium", meaning:"relating to status", cheat:"medium > middle status", hintBold:["middle"] },
+  { type:"suffix", affix:"-ize", meaning:"become, change", cheat:"finalize > become final", hintBold:["become"] },
+  { type:"suffix", affix:"-or", meaning:"one who does, is from, or has a special characteristic", cheat:"actor > one who acts", hintBold:["one who"] },
+  { type:"suffix", affix:"-acy", meaning:"state or quality of", cheat:"privacy > quality of being private", hintBold:["quality of"] },
+  { type:"suffix", affix:"-al", meaning:"act or process of", cheat:"approval > act of approving", hintBold:["act of"] },
+  { type:"suffix", affix:"-ion / -sion / -tion", meaning:"state of being, quality, action", cheat:"reaction > state of reacting", hintBold:["state of"] },
+  { type:"suffix", affix:"-ite", meaning:"nature, quality of", cheat:"favorite > quality of being favored", hintBold:["quality of"] },
+];
 
     const prefixMeanings = Array.from(new Set(cards.filter(c => c.type === "prefix").map(c => c.meaning)));
     const suffixMeanings = Array.from(new Set(cards.filter(c => c.type === "suffix").map(c => c.meaning)));
@@ -306,6 +306,50 @@
       return `<strong>${safeWord}</strong>`;
     }
 
+    function renderHintWithBold(hint, phrases){
+      const raw = String(hint ?? "");
+      const list = Array.isArray(phrases)
+        ? phrases.map(p => String(p ?? "").trim()).filter(Boolean)
+        : [];
+    
+      if (!list.length) return escapeHtml(raw);
+    
+      const lower = raw.toLowerCase();
+      const ranges = [];
+    
+      for (const p of list){
+        const needle = p.toLowerCase();
+        const start = lower.indexOf(needle);
+        if (start === -1) continue;
+        ranges.push({ start, end: start + needle.length });
+      }
+    
+      if (!ranges.length) return escapeHtml(raw);
+    
+      ranges.sort((a,b) => a.start - b.start);
+    
+      // avoid overlaps / nesting
+      const nonOverlap = [];
+      let lastEnd = -1;
+      for (const r of ranges){
+        if (r.start < lastEnd) continue;
+        nonOverlap.push(r);
+        lastEnd = r.end;
+      }
+    
+      let out = "";
+      let cursor = 0;
+    
+      for (const r of nonOverlap){
+        out += escapeHtml(raw.slice(cursor, r.start));
+        out += "<strong>" + escapeHtml(raw.slice(r.start, r.end)) + "</strong>";
+        cursor = r.end;
+      }
+    
+      out += escapeHtml(raw.slice(cursor));
+      return out;
+    }
+
     function pickWrongMeanings(correct, type, count){
       const pool = (type === "prefix") ? prefixMeanings : suffixMeanings;
       const candidates = pool.filter(m => m !== correct);
@@ -339,7 +383,7 @@
 
     elCard.innerHTML = `<div class="front-affix"><strong>${escapeHtml(formatAffixDisplay(c.affix))}</strong></div>`;
     elCheatWordOnly.style.display = "";
-    elCheatWordOnly.innerHTML = `<span class="cheat-label">cheat code:</span> <span class="cheat-word">${highlightAffixInCheatWord(word, c.affix, c.type)}</span>`;
+elCheatWordOnly.innerHTML = `<span class="cheat-label">cheat code:</span>&nbsp;&nbsp;<span class="cheat-word">${highlightAffixInCheatWord(word, c.affix, c.type)}</span>`;
 
       const wrongs = pickWrongMeanings(c.meaning, c.type, 2);
       const options = shuffle([c.meaning, ...wrongs]);
@@ -364,7 +408,8 @@
       const { word, hint } = parseCheat(c.cheat);
 
       const cheatWordHtml = highlightAffixInCheatWord(word, c.affix, c.type);
-      const cheatLineHtml = `${cheatWordHtml} &gt; ${escapeHtml(hint)}`;
+      const hintHtml = renderHintWithBold(hint, c.hintBold);
+      const cheatLineHtml = `${cheatWordHtml}&nbsp;&nbsp;&gt;&nbsp;&nbsp;${hintHtml}`;
 
       elCard.innerHTML = `
         <div class="back-affix"><strong>${escapeHtml(formatAffixDisplay(c.affix))}</strong></div>
