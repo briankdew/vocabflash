@@ -10,13 +10,40 @@
 
   <style>
     :root{
-      --bg:#e9e9e9;
+      --theme-logo-vocab: #777565;   /* change me */
+      --theme-logo-flash: #363322;  /* change me */
+      --theme-tagline: #8f8d7e;     /* change me */
+      --bg:#f4f2e7;
       --card:#ffffff;
       --text:#000000;
       --radius:16px;
       --gap:12px;
     }
     *{ box-sizing:border-box; }
+    header {
+      text-align: center;
+      margin: 1rem 0;
+    }
+    
+    .logo {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(40px, 10vw, 80px);
+      font-weight: 500;
+      line-height: 1;
+    }
+    
+    .logo-vocab { color: var(--theme-logo-vocab) !important; forced-color-adjust: none; }
+    .logo-flash { color: var(--theme-logo-flash) !important; forced-color-adjust: none; }
+    
+    .tagline {
+      font-family: 'Fredoka', sans-serif;
+      font-size: clamp(16px, 3vw, 24px);
+      font-weight: 400;
+      color: var(--theme-tagline) !important;
+      margin-top: 0.25rem;
+      forced-color-adjust: none;
+}
+
     body{
       margin:0;
       font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
@@ -139,6 +166,12 @@
   </style>
 </head>
 <body>
+  <header>
+  <div class="logo">
+    <span class="logo-vocab">vocab</span><span class="logo-flash">flash</span>
+  </div>
+  <div class="tagline">let’s put some vocabulary in your back pocket!</div>
+</header>
   <main class="wrap" aria-label="Affix Flashcards">
     <section class="card" id="card" role="group" aria-label="Flashcard"></section>
 
