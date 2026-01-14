@@ -85,7 +85,7 @@
     .meaning{
       font-size: clamp(18px, 3.8vw, 22px);
       line-height: 1.35;
-      margin: 0 0 14px;
+      margin: 6px 0 18px;
     }
     .cheatline{
       font-size: clamp(16px, 3.4vw, 20px);
@@ -106,11 +106,20 @@
       border-radius: var(--radius);
       padding: 12px 14px;
       text-align:center;
-      font-size: clamp(18px, 4vw, 22px);
-      font-weight: 700;
+      font-size: clamp(20px, 4.4vw, 24px);
+      font-weight: 400;
       box-shadow: 0 2px 10px rgba(0,0,0,0.04);
       word-break: break-word;
     }
+    .cheatword .cheat-label{
+      color:#777565;
+      font-weight:700; /* fallback if 600 isn't available */
+    }
+    @supports (font-weight: 600){
+      .cheatword .cheat-label{ font-weight:600; }
+    }
+    .cheatword .cheat-word{ color:#777565; }
+    .cheatword strong{ font-weight: 700; }
     .choices{
       width: 100%;
       display:flex;
@@ -141,6 +150,15 @@
       font-size: 16px;
       text-align:center;
     }
+    /* front-only backgrounds */
+    body.is-front #cheatWordOnly { background: #c0beb1; }
+    
+    /* front-only: meaning option boxes */
+    body.is-front #choices button { background: #dad8cc; }
+    
+    /* back-only: Next Card button */
+    body.is-back #choices button { background: #dad8cc; }
+
     /* --- wrong-answer feedback animations --- */
     @keyframes cardShake {
       0%   { transform: translateX(0); }
@@ -254,6 +272,15 @@
         .sort((a,b) => b.length - a.length);
     }
 
+    function formatAffixDisplay(affixStr){
+      return affixStr
+        .split("/")
+        .map(s => s.trim())
+        .filter(Boolean)
+        .join(" ")
+        .replace(/\s+/g, " ");
+    }
+
     function highlightAffixInCheatWord(word, affixStr, type){
       const safeWord = escapeHtml(word);
       const vars = affixVariants(affixStr, type);
@@ -304,13 +331,15 @@
     function renderFront(){
       showingBack = false;
       elStatus.textContent = "";
+      document.body.classList.add("is-front");
+      document.body.classList.remove("is-back");
 
       const c = cards[idx];
       const { word } = parseCheat(c.cheat);
 
-      elCard.innerHTML = `<div class="front-affix"><strong>${escapeHtml(c.affix)}</strong></div>`;
-      elCheatWordOnly.style.display = "";
-      elCheatWordOnly.textContent = word;
+    elCard.innerHTML = `<div class="front-affix"><strong>${escapeHtml(formatAffixDisplay(c.affix))}</strong></div>`;
+    elCheatWordOnly.style.display = "";
+    elCheatWordOnly.innerHTML = `<span class="cheat-label">cheat code:</span> <span class="cheat-word">${highlightAffixInCheatWord(word, c.affix, c.type)}</span>`;
 
       const wrongs = pickWrongMeanings(c.meaning, c.type, 2);
       const options = shuffle([c.meaning, ...wrongs]);
@@ -328,6 +357,8 @@
     function renderBack(){
       showingBack = true;
       elStatus.textContent = "";
+      document.body.classList.add("is-back");
+      document.body.classList.remove("is-front");
 
       const c = cards[idx];
       const { word, hint } = parseCheat(c.cheat);
@@ -336,7 +367,7 @@
       const cheatLineHtml = `${cheatWordHtml} &gt; ${escapeHtml(hint)}`;
 
       elCard.innerHTML = `
-        <div class="back-affix"><strong>${escapeHtml(c.affix)}</strong></div>
+        <div class="back-affix"><strong>${escapeHtml(formatAffixDisplay(c.affix))}</strong></div>
         <p class="meaning">${escapeHtml(c.meaning)}</p>
         <p class="cheatline">${cheatLineHtml}</p>
       `;
