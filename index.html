@@ -10,14 +10,61 @@
 
   <style>
     :root{
-      --theme-logo-vocab: #777565;   /* change me */
-      --theme-logo-flash: #363322;  /* change me */
-      --theme-tagline: #8f8d7e;     /* change me */
-      --bg:#f4f2e7;
-      --card:#ffffff;
-      --text:#000000;
-      --radius:16px;
-      --gap:12px;
+      /* --- PALETTE DEFINITIONS (OKLCH) --- */
+      
+      /* Neutrals */
+      --color-white: #ffffff;
+
+      /* Backgrounds */
+      --palette-bg: oklch(0.96 0.015 101);       /* #f4f2e7 */
+
+      /* Beige Scale */
+      --palette-beige-00: oklch(0.92 0.0159 101); /* #e7e5d9 */
+      --palette-beige-01: oklch(0.88 0.0168 101); /* #dad8cc */
+      --palette-beige-02: oklch(0.8 0.0186 101);  /* #c0beb1 */
+      --palette-beige-03: oklch(0.72 0.0204 101); /* #a7a597 */
+      --palette-beige-04: oklch(0.64 0.0222 101); /* #8f8d7e */
+      --palette-beige-05: oklch(0.56 0.024 101);  /* #777565 */
+      --palette-beige-06: oklch(0.48 0.0258 101); /* #615e4e */
+      --palette-beige-07: oklch(0.4 0.0276 101);  /* #4b4837 */
+      --palette-beige-08: oklch(0.32 0.0294 101); /* #363322 */
+      --palette-beige-09: oklch(0.24 0.0312 101); /* #22200e */
+      --palette-beige-10: oklch(0.16 0.033 101);  /* #100d00 */
+
+      /* Green Scale */
+      --palette-green-00: oklch(0.96 0.0197 136.6); /* ecf5e8 */
+      --palette-green-01: oklch(0.88 0.0354 136.6); /* cdddc6 */
+      --palette-green-02: oklch(0.80 0.0510 136.6); /* afc6a6 */
+      --palette-green-03: oklch(0.718 0.0667 136.6); /* 91ae85 */
+      --palette-green-04: oklch(0.64 0.0700 136.6); /* 79966c */
+      --palette-green-05: oklch(0.56 0.0733 136.6); /* 607f53 */
+      --palette-green-06: oklch(0.48 0.0767 136.6); /* 49683b */
+      --palette-green-07: oklch(0.40 0.0800 136.6); /* 325124 */
+      --palette-green-08: oklch(0.32 0.0833 136.6); /* 1d3c0b */
+      --palette-green-09: oklch(0.24 0.0867 136.6); /* 072700 */
+      --palette-green-10: oklch(0.16 0.0900 136.6); /* 001300 */
+
+      /* Red Scale */
+      --palette-red-00: oklch(0.9600 0.0156 18.00); /* #ffeded */
+      --palette-red-01: oklch(0.9200 0.0313 18.00); /* #ffdada */
+      --palette-red-02: oklch(0.8800 0.0625 18.00); /* #fec8c8 */
+      --palette-red-03: oklch(0.8000 0.1094 18.00); /* #faa2a4 */
+      --palette-red-04: oklch(0.7200 0.1719 18.00); /* #f27b81 */
+      --palette-red-05: oklch(0.6400 0.2031 18.00); /* #e84e5f */
+      --palette-red-06: oklch(0.5600 0.2109 18.00); /* #d8013f */
+      --palette-red-07: oklch(0.4800 0.1875 18.00); /* #b00131 */
+      --palette-red-08: oklch(0.4000 0.1563 18.00); /* #890124 */
+      --palette-red-19: oklch(0.3200 0.1250 18.00); /* #640018 */
+      --palette-red-10: oklch(0.2400 0.0938 18.00); /* #42000d */
+      
+      --theme-logo-vocab: var(--palette-beige-05);
+      --theme-logo-flash: var(--palette-beige-08);
+      --theme-tagline: var(--palette-beige-05);
+      
+      --card: var(--color-white);
+      --text: var(--palette-beige-09);
+      --radius:20px;
+      --gap:1rem;
     }
     *{ box-sizing:border-box; }
     header {
@@ -46,8 +93,8 @@
 
     body{
       margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      background: var(--bg);
+      font-family: 'Archivo', system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+      background: var(--palette-bg);
       color: var(--text);
     }
     .wrap{
@@ -64,15 +111,16 @@
       background: var(--card);
       border-radius: var(--radius);
       padding: 22px 18px;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
       text-align:center;
     }
     .front-affix{
       font-weight: 800;
-      font-size: clamp(34px, 7.2vw, 56px);
+      font-size: clamp(34px, 10vw, 64px);
       line-height: 1.1;
       letter-spacing: 0.2px;
       margin: 8px 0;
+      white-space: pre-wrap;
       word-break: break-word;
     }
     .back-affix{
@@ -80,6 +128,7 @@
       font-size: clamp(28px, 6vw, 42px);
       line-height: 1.15;
       margin: 0 0 10px;
+      white-space: pre-wrap;
       word-break: break-word;
     }
     .meaning{
@@ -91,6 +140,7 @@
       font-size: clamp(16px, 3.4vw, 20px);
       line-height: 1.35;
       margin: 0;
+      white-space: pre-wrap;
       word-break: break-word;
     }
     .below{
@@ -109,6 +159,7 @@
       font-size: clamp(20px, 4.4vw, 24px);
       font-weight: 400;
       box-shadow: 0 2px 10px rgba(0,0,0,0.04);
+      white-space: pre-wrap;
       word-break: break-word;
     }
     .cheatword .cheat-label{
@@ -119,7 +170,10 @@
       .cheatword .cheat-label{ font-weight:600; }
     }
     .cheatword .cheat-word{ color:#777565; }
-    .cheatword strong{ font-weight: 700; }
+    .cheatword strong{
+      font-weight: 700;
+      color: var(--palette-beige-06);
+    }
     .choices{
       width: 100%;
       display:flex;
@@ -137,7 +191,7 @@
       font-size: clamp(14px, 3.2vw, 18px);
       line-height: 1.2;
       cursor:pointer;
-      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.5);
       width: 100%;
       min-height: 56px;
       text-align:center;
@@ -149,15 +203,22 @@
       min-height: 20px;
       font-size: 16px;
       text-align:center;
+      color: var(--palette-red-07);
+      /* font-weight: 600; */
     }
     /* front-only backgrounds */
-    body.is-front #cheatWordOnly { background: #c0beb1; }
+    body.is-front #cheatWordOnly { background: var(--palette-beige-02); }
     
     /* front-only: meaning option boxes */
-    body.is-front #choices button { background: #dad8cc; }
+    body.is-front #choices button { background: var(--palette-beige-01); }
     
     /* back-only: Next Card button */
-    body.is-back #choices button { background: #dad8cc; }
+    body.is-back #choices button {
+      color: var(--palette-green-07);
+      background: var(--palette-green-01);
+      font-size: clamp(16px, 3.4vw, 24px);
+      font-weight: 700;
+    }
 
     /* --- wrong-answer feedback animations --- */
     @keyframes cardShake {
@@ -174,8 +235,7 @@
       100% { background: var(--card); box-shadow: 0 2px 10px rgba(0,0,0,0.06); }
     }
     
-    #card.shake { animation: cardShake 420ms ease; }
-    button.wrong { animation: wrongFlash 420ms ease; }
+    #card.shake { animation: cardShake 300ms ease; }
     
     @media (prefers-reduced-motion: reduce){
       #card.shake, button.wrong { animation: none; }
@@ -206,25 +266,25 @@
 
     const cards = [
   // Prefixes
-  { type:"prefix", affix:"con- / com-", meaning:"together with", cheat:"construct > with structure", hintBold:["with"] },
-  { type:"prefix", affix:"in- / im- / ir- / il-", meaning:"not", cheat:"ineffective > not effective", hintBold:["not"] },
-  { type:"prefix", affix:"ex-", meaning:"outside, away from, no", cheat:"exit > go outside", hintBold:["outside"] },
-  { type:"prefix", affix:"non-", meaning:"not", cheat:"nonstop > not stopping", hintBold:["not"] },
-  { type:"prefix", affix:"post-", meaning:"later, after", cheat:"postgame > after the game", hintBold:["after"] },
-  { type:"prefix", affix:"anti-", meaning:"against, opposite", cheat:"antiwar > against war", hintBold:["against"] },
-  { type:"prefix", affix:"contra-", meaning:"against, opposite", cheat:'contraband > against the "band" (old word for a "law")', hintBold:["against"] },
+  { type:"prefix", affix:"con-  com-", meaning:"together with", cheat:"construct  >  with structure", hintBold:["with"] },
+  { type:"prefix", affix:"in-  im-  ir-  il-", meaning:"not", cheat:"ineffective  >  not effective", hintBold:["not"] },
+  { type:"prefix", affix:"ex-", meaning:"outside, away from, no", cheat:"exit  >  go outside", hintBold:["outside"] },
+  { type:"prefix", affix:"non-", meaning:"not", cheat:"nonstop  >  not stopping", hintBold:["not"] },
+  { type:"prefix", affix:"post-", meaning:"later, after", cheat:"postgame  >  after the game", hintBold:["after"] },
+  { type:"prefix", affix:"anti-", meaning:"against, opposite", cheat:"antiwar  >  against war", hintBold:["against"] },
+  { type:"prefix", affix:"contra-", meaning:"against, opposite", cheat:'contraband  >  against the "band" (old for "law")', hintBold:["against"] },
 
   // Suffixes
-  { type:"suffix", affix:"-ic", meaning:"like, characteristic of", cheat:"athletic > like an athelete", hintBold:["like"] },
-  { type:"suffix", affix:"-ive", meaning:"having a quality or tendency", cheat:"creative > the quality to create", hintBold:["quality"] },
-  { type:"suffix", affix:"-ate", meaning:"office, rank, or location; cause or make", cheat:"graduate > rank above grade level or make the grade", hintBold:["rank","make"] },
-  { type:"suffix", affix:"-ium", meaning:"relating to status", cheat:"medium > middle status", hintBold:["middle"] },
-  { type:"suffix", affix:"-ize", meaning:"become, change", cheat:"finalize > become final", hintBold:["become"] },
-  { type:"suffix", affix:"-or", meaning:"one who does, is from, or has a special characteristic", cheat:"actor > one who acts", hintBold:["one who"] },
-  { type:"suffix", affix:"-acy", meaning:"state or quality of", cheat:"privacy > quality of being private", hintBold:["quality of"] },
-  { type:"suffix", affix:"-al", meaning:"act or process of", cheat:"approval > act of approving", hintBold:["act of"] },
-  { type:"suffix", affix:"-ion / -sion / -tion", meaning:"state of being, quality, action", cheat:"reaction > state of reacting", hintBold:["state of"] },
-  { type:"suffix", affix:"-ite", meaning:"nature, quality of", cheat:"favorite > quality of being favored", hintBold:["quality of"] },
+  { type:"suffix", affix:"-ic", meaning:"like, characteristic of", cheat:"athletic  >  like an athelete", hintBold:["like"] },
+  { type:"suffix", affix:"-ive", meaning:"having a quality or tendency", cheat:"creative  >  the quality to create", hintBold:["quality"] },
+  { type:"suffix", affix:"-ate", meaning:"office, rank, or location; cause or make", cheat:"graduate  >  rank above/make the grade", hintBold:["rank","make"] },
+  { type:"suffix", affix:"-ium", meaning:"relating to status", cheat:"medium  >  middle status", hintBold:["middle"] },
+  { type:"suffix", affix:"-ize", meaning:"become, change", cheat:"finalize  >  become final", hintBold:["become"] },
+  { type:"suffix", affix:"-or", meaning:"one who does, is from, or has a special characteristic", cheat:"actor  >  one who acts", hintBold:["one who"] },
+  { type:"suffix", affix:"-acy", meaning:"state or quality of", cheat:"privacy  >  quality of being private", hintBold:["quality of"] },
+  { type:"suffix", affix:"-al", meaning:"act or process of", cheat:"approval  >  act of approving", hintBold:["act of"] },
+  { type:"suffix", affix:"-ion  -sion  -tion", meaning:"state of being, quality, action", cheat:"reaction  >  state of reacting", hintBold:["state of"] },
+  { type:"suffix", affix:"-ite", meaning:"nature, quality of", cheat:"favorite  >  quality of being favored", hintBold:["quality of"] },
 ];
 
     const prefixMeanings = Array.from(new Set(cards.filter(c => c.type === "prefix").map(c => c.meaning)));
@@ -254,36 +314,17 @@
       return { word, hint };
     }
 
-    function affixVariants(affixStr, type){
+    function affixVariants(affixStr){
       return affixStr
-        .split("/")
-        .map(s => s.trim())
-        .filter(Boolean)
-        .map(a => {
-          let v = a;
-          if (type === "prefix") {
-            v = v.replace(/-$/,"").replace(/^\-/,"");
-          } else {
-            v = v.replace(/^\-/,"").replace(/-$/,"");
-          }
-          return v.trim();
-        })
+        .split(" ")
+        .map(s => s.trim().replace(/^-|-$/g, ""))
         .filter(Boolean)
         .sort((a,b) => b.length - a.length);
     }
 
-    function formatAffixDisplay(affixStr){
-      return affixStr
-        .split("/")
-        .map(s => s.trim())
-        .filter(Boolean)
-        .join(" ")
-        .replace(/\s+/g, " ");
-    }
-
     function highlightAffixInCheatWord(word, affixStr, type){
       const safeWord = escapeHtml(word);
-      const vars = affixVariants(affixStr, type);
+      const vars = affixVariants(affixStr);
 
       // Try best match (longest) at start for prefixes, end for suffixes
       for (const v of vars){
@@ -381,9 +422,9 @@
       const c = cards[idx];
       const { word } = parseCheat(c.cheat);
 
-    elCard.innerHTML = `<div class="front-affix"><strong>${escapeHtml(formatAffixDisplay(c.affix))}</strong></div>`;
+    elCard.innerHTML = `<div class="front-affix"><strong>${escapeHtml(c.affix)}</strong></div>`;
     elCheatWordOnly.style.display = "";
-elCheatWordOnly.innerHTML = `<span class="cheat-label">cheat code:</span>&nbsp;&nbsp;<span class="cheat-word">${highlightAffixInCheatWord(word, c.affix, c.type)}</span>`;
+    elCheatWordOnly.innerHTML = `<span class="cheat-label">cheat code:</span>  <span class="cheat-word">${highlightAffixInCheatWord(word, c.affix, c.type)}</span>`;
 
       const wrongs = pickWrongMeanings(c.meaning, c.type, 2);
       const options = shuffle([c.meaning, ...wrongs]);
@@ -409,10 +450,9 @@ elCheatWordOnly.innerHTML = `<span class="cheat-label">cheat code:</span>&nbsp;&
 
       const cheatWordHtml = highlightAffixInCheatWord(word, c.affix, c.type);
       const hintHtml = renderHintWithBold(hint, c.hintBold);
-      const cheatLineHtml = `${cheatWordHtml}&nbsp;&nbsp;&gt;&nbsp;&nbsp;${hintHtml}`;
-
+      const cheatLineHtml = `<strong>cheat code:</strong>  ${cheatWordHtml}  ≈  ${hintHtml}`;
       elCard.innerHTML = `
-        <div class="back-affix"><strong>${escapeHtml(formatAffixDisplay(c.affix))}</strong></div>
+        <div class="back-affix"><strong>${escapeHtml(c.affix)}</strong></div>
         <p class="meaning">${escapeHtml(c.meaning)}</p>
         <p class="cheatline">${cheatLineHtml}</p>
       `;
@@ -446,8 +486,8 @@ elCheatWordOnly.innerHTML = `<span class="cheat-label">cheat code:</span>&nbsp;&
         elCard.classList.add("shake");
     
         // Optional brief text (clears quickly)
-        elStatus.textContent = "Not quite — try again.";
-        setTimeout(() => { elStatus.textContent = ""; }, 500);
+        elStatus.textContent = "Select a different answer.";
+        setTimeout(() => { elStatus.textContent = ""; }, 1000);
       }
     }
 
