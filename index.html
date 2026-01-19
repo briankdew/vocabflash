@@ -124,7 +124,7 @@
       white-space: pre-wrap;
       word-break: break-word;
     }
-    .back-affix{
+    .back-affix, .qa-question{
       font-weight: 800;
       font-size: clamp(28px, 6vw, 42px);
       line-height: 1.15;
@@ -251,13 +251,13 @@
   </div>
   <div class="tagline">let’s put some vocabulary in your back pocket!</div>
 </header>
-  <main class="wrap" aria-label="Affix Flashcards">
+  <main class="wrap" aria-label="Flashcards">
     <section class="flashcard" id="flashcard" role="group" aria-label="Flashcard"></section>
 
     <section class="below">
       <div class="cheatword" id="frontCheatStrip" aria-label="Cheat-code word"></div>
 
-      <div class="below-actions" id="belowActions" aria-label="Answer choices"></div>
+      <div class="below-actions" id="belowActions" aria-label="Below-flashcard actions"></div>
       <div class="status" id="status" aria-live="polite"></div>
     </section>
   </main>
@@ -288,12 +288,12 @@
   { type:"suffix", affix:"-ite", meaning:"nature, quality of", cheat:"favorite  >  quality of being favored", hintBold:["quality of"] },
 ];
 
-    const decks = { default: defaultDeck };
+    const decks = { default: { mode: "affix", entries: defaultDeck } };
     let activeDeckKey = "default";
     const getActiveDeck = () => decks[activeDeckKey];
+    const getActiveEntries = () => getActiveDeck().entries;
+    const getActiveMode = () => getActiveDeck().mode;
 
-    const prefixMeanings = Array.from(new Set(defaultDeck.filter(c => c.type === "prefix").map(c => c.meaning)));
-    const suffixMeanings = Array.from(new Set(defaultDeck.filter(c => c.type === "suffix").map(c => c.meaning)));
 
     const elFlashcard = document.getElementById("flashcard");
     const elFrontCheatStrip = document.getElementById("frontCheatStrip");
@@ -396,8 +396,16 @@
       return out;
     }
 
+        function getAffixMeaningPool(type){
+      return Array.from(new Set(
+        getActiveEntries()
+          .filter(e => e.type === type)
+          .map(e => e.meaning)
+      ));
+    }
+
     function pickWrongMeanings(correct, type, count){
-      const pool = (type === "prefix") ? prefixMeanings : suffixMeanings;
+      const pool = getAffixMeaningPool(type);
       const candidates = pool.filter(m => m !== correct);
       const picks = [];
 
@@ -424,22 +432,61 @@
       document.body.classList.add("is-front");
       document.body.classList.remove("is-back");
 
-      const c = getActiveDeck()[contentIndex];
-      const { word } = parseCheat(c.cheat);
+      const mode = getActiveMode();
+      const entry = getActiveEntries()[contentIndex];
 
-    elFlashcard.innerHTML = `<div class="front-affix"><strong>${escapeHtml(c.affix)}</strong></div>`;
-    elFrontCheatStrip.style.display = "";
-    elFrontCheatStrip.innerHTML = `<span class="cheat-label">cheat code:</span>  <span class="cheat-word">${highlightAffixInCheatWord(word, c.affix, c.type)}</span>`;
+      if (mode === "qa"){
+        elFlashcard.innerHTML = `<p class="meaning">${escapeHtml(entry.q ?? "")}</p>`;
 
-      const wrongs = pickWrongMeanings(c.meaning, c.type, 2);
-      const options = shuffle([c.meaning, ...wrongs]);
+        if (entry.hint){
+          elFrontCheatStrip.style.display = "";
+          elFrontCheatStrip.textContent = entry.hint;
+        } else {
+          elFrontCheatStrip.style.display = "none";
+        }
+
+        const correct = String(entry.a ?? "");
+        const candidates = Array.from(new Set(
+          getActiveEntries()
+            .map(e => String(e.a ?? ""))
+            .filter(a => a && a !== correct)
+        ));
+
+        const wrongs = [];
+        while (wrongs.length < 2 && candidates.length){
+          const j = Math.floor(Math.random() * candidates.length);
+          wrongs.push(candidates[j]);
+          candidates.splice(j, 1);
+        }
+
+        const options = shuffle([correct, ...wrongs]);
+
+        elBelowActions.innerHTML = "";
+        for (const opt of options){
+          const btn = document.createElement("button");
+          btn.type = "button";
+          btn.textContent = opt;
+          btn.addEventListener("click", () => onChooseMeaning(btn, opt === correct));
+          elBelowActions.appendChild(btn);
+        }
+        return;
+      }
+
+      const { word } = parseCheat(entry.cheat);
+
+      elFlashcard.innerHTML = `<div class="front-affix"><strong>${escapeHtml(entry.affix)}</strong></div>`;
+      elFrontCheatStrip.style.display = "";
+      elFrontCheatStrip.innerHTML = `<span class="cheat-label">cheat code:</span>  <span class="cheat-word">${highlightAffixInCheatWord(word, entry.affix, entry.type)}</span>`;
+
+      const wrongs = pickWrongMeanings(entry.meaning, entry.type, 2);
+      const options = shuffle([entry.meaning, ...wrongs]);
 
       elBelowActions.innerHTML = "";
       for (const opt of options){
         const btn = document.createElement("button");
         btn.type = "button";
         btn.textContent = opt;
-        btn.addEventListener("click", () => onChooseMeaning(btn, opt === c.meaning));
+        btn.addEventListener("click", () => onChooseMeaning(btn, opt === entry.meaning));
         elBelowActions.appendChild(btn);
       }
     }
@@ -450,17 +497,26 @@
       document.body.classList.add("is-back");
       document.body.classList.remove("is-front");
 
-      const c = getActiveDeck()[contentIndex];
-      const { word, hint } = parseCheat(c.cheat);
+      const mode = getActiveMode();
+      const entry = getActiveEntries()[contentIndex];
 
-      const cheatWordHtml = highlightAffixInCheatWord(word, c.affix, c.type);
-      const hintHtml = renderHintWithBold(hint, c.hintBold);
-      const cheatLineHtml = `<strong>cheat code:</strong>  ${cheatWordHtml}  ≈  ${hintHtml}`;
-      elFlashcard.innerHTML = `
-        <div class="back-affix"><strong>${escapeHtml(c.affix)}</strong></div>
-        <p class="meaning">${escapeHtml(c.meaning)}</p>
-        <p class="cheatline">${cheatLineHtml}</p>
-      `;
+      if (mode === "qa"){
+        elFlashcard.innerHTML = `
+          <div class="back-affix"><strong>${escapeHtml(entry.q ?? "")}</strong></div>
+          <p class="meaning">${escapeHtml(entry.a ?? "")}</p>
+        `;
+      } else {
+        const { word, hint } = parseCheat(entry.cheat);
+
+        const cheatWordHtml = highlightAffixInCheatWord(word, entry.affix, entry.type);
+        const hintHtml = renderHintWithBold(hint, entry.hintBold);
+        const cheatLineHtml = `<strong>cheat code:</strong>  ${cheatWordHtml}  ≈  ${hintHtml}`;
+        elFlashcard.innerHTML = `
+          <div class="back-affix"><strong>${escapeHtml(entry.affix)}</strong></div>
+          <p class="meaning">${escapeHtml(entry.meaning)}</p>
+          <p class="cheatline">${cheatLineHtml}</p>
+        `;
+      }
 
       elFrontCheatStrip.style.display = "none";
 
@@ -497,7 +553,7 @@
     }
 
     function nextCard(){
-      contentIndex = (contentIndex + 1) % getActiveDeck().length;
+      contentIndex = (contentIndex + 1) % getActiveEntries().length;
       renderFront();
     }
 
